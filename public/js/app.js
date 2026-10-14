@@ -1,0 +1,3 @@
+document.querySelectorAll('[data-confirm]').forEach(form=>form.addEventListener('submit',e=>{if(!window.confirm(form.dataset.confirm||'Are you sure?'))e.preventDefault()}));
+const filter=document.querySelector('#filter-cards'); if(filter){filter.addEventListener('input',()=>{const q=filter.value.trim().toLowerCase();document.querySelectorAll('.filter-item').forEach(card=>card.hidden=!card.dataset.search.includes(q))})}
+document.querySelectorAll('input[type="date"][name="end_date"]').forEach(end=>{const start=end.form.querySelector('input[name="start_date"]');if(start)start.addEventListener('change',()=>{end.min=start.value;if(end.value&&end.value<start.value)end.value=start.value})});

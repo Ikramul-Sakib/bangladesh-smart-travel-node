@@ -1,0 +1,1 @@
+const fs=require('fs');const path=require('path');require('dotenv').config();const db=require('../src/db');const sql=fs.readFileSync(path.join(__dirname,'../database/seed.sql'),'utf8');db.exec(sql);console.log('Starter destinations and attractions added.');db.close();

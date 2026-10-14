@@ -1,0 +1,22 @@
+require('dotenv').config();
+const express = require('express');
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
+const helmet = require('helmet');
+const methodOverride = require('method-override');
+const path = require('path');
+const fs = require('fs');
+const db = require('./src/db');
+const app = express();
+const PORT = Number(process.env.PORT || 3000);
+
+app.set('view engine','ejs'); app.set('views',path.join(__dirname,'views'));
+app.use(helmet({contentSecurityPolicy:false}));
+app.use(express.urlencoded({extended:true,limit:'1mb'})); app.use(express.json()); app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname,'public')));
+app.use(session({store:new SQLiteStore({db:'sessions.sqlite',dir:path.join(__dirname,'database')}),secret:process.env.SESSION_SECRET||'local-development-secret-change-me',resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',maxAge:1000*60*60*24*7}}));
+app.use((req,res,next)=>{res.locals.user=req.session.user||null;res.locals.flash=req.session.flash||null;delete req.session.flash;res.locals.path=req.path;res.locals.money=n=>new Intl.NumberFormat('en-BD',{maximumFractionDigits:0}).format(Number(n||0));next();});
+const {router, notFound}=require('./src/routes'); app.use(router);
+app.use((err,req,res,next)=>{console.error(err);res.status(500).render('error',{title:'Something went wrong',message:process.env.NODE_ENV==='production'?'Please try again.':err.message});});
+app.use(notFound);
+app.listen(PORT,()=>console.log(`Bangladesh Smart Travel running at http://localhost:${PORT}`));
